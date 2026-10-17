@@ -3,6 +3,14 @@ extends PlayerState
 var dashPower = 12
 
 func _process(delta):
+	# Cancel Peel Out if pressing the opposite horizontal direction
+	if parent.inputs[parent.INPUTS.XINPUT] != 0 and parent.inputs[parent.INPUTS.XINPUT] == -parent.direction:
+		parent.sfx[2].stop()
+		parent.spindashPower = 0.0
+		parent.peelOutCharge = 0.0
+		parent.set_state(parent.STATES.NORMAL)
+		return
+	
 	# dust sprite
 	var dash = parent.sprite.get_node("DashDust")
 	dash.visible = true
@@ -26,7 +34,13 @@ func _process(delta):
 
 
 	# release
-	if (parent.inputs[parent.INPUTS.YINPUT] >= 0):
+	var release_condition = false
+	if parent.peelOutByAction3:
+		release_condition = (parent.inputs[parent.INPUTS.ACTION3] == 0)
+	else:
+		release_condition = (parent.inputs[parent.INPUTS.YINPUT] >= 0)
+
+	if release_condition:
 		# Lock camera
 		parent.lock_camera((parent.spindashPower+4)/60.0)
 		
@@ -36,6 +50,18 @@ func _process(delta):
 		parent.sfx[2].stop()
 		parent.peelOutCharge = 0.0
 		parent.set_state(parent.STATES.NORMAL)
+
+	## release (old)
+	#if (parent.inputs[parent.INPUTS.YINPUT] >= 0):
+		## Lock camera
+		#parent.lock_camera((parent.spindashPower+4)/60.0)
+		#
+		## Release
+		#parent.movement.x = speedCalc*parent.direction
+		#parent.sfx[3].play()
+		#parent.sfx[2].stop()
+		#parent.peelOutCharge = 0.0
+		#parent.set_state(parent.STATES.NORMAL)
 
 func _physics_process(delta):
 	# Gravity

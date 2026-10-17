@@ -52,6 +52,7 @@ scroll_base_scale = Vector2(1, 0.05)
 scroll_limit_end = Vector2(0, 256)
 
 [node name="ParallaxLayerAB" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.01, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -68,6 +69,7 @@ autoplay = "default"
 frame_progress = 0.405603
 
 [node name="ParallaxLayerC" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.25, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -79,6 +81,7 @@ texture = ExtResource("3_5g6t2")
 stretch_mode = 1
 
 [node name="ParallaxLayerD" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.3, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -91,6 +94,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerE" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.325, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -103,6 +107,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerF" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.35, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -115,6 +120,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerG" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.4, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -127,6 +133,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerH" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.45, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -139,6 +146,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerI" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.5, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -151,6 +159,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerJ" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.55, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -163,6 +172,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerJ2" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.6, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -175,6 +185,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerJ3" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.7, 1)
 motion_mirroring = Vector2(512, 0)
 
@@ -187,6 +198,7 @@ expand_mode = 1
 stretch_mode = 1
 
 [node name="ParallaxLayerJ4" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
 motion_scale = Vector2(0.8, 1)
 motion_mirroring = Vector2(512, 0)
 

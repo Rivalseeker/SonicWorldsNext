@@ -1328,7 +1328,6 @@ texture = ExtResource("2_vki44")
 offset = Vector2(0, -6)
 hframes = 16
 vframes = 18
-frame = 83
 
 [node name="DashDust" type="AnimatedSprite2D" parent="Sprite2D"]
 visible = false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=131 format=3 uid="uid://cioq5saowvqxj"]
+[gd_scene load_steps=139 format=3 uid="uid://cioq5saowvqxj"]
 
 [ext_resource type="Script" path="res://Scripts/Player/Player.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://d1e4muavtnun6" path="res://Graphics/Players/PlayerAnimations/Sonic.tscn" id="2"]
@@ -58,6 +58,7 @@
 [ext_resource type="AudioStream" uid="uid://78gy6s87pbbo" path="res://Audio/SFX/Player/Land.wav" id="60"]
 [ext_resource type="AudioStream" uid="uid://uaa5twt8odin" path="res://Audio/SFX/Player/Slide.wav" id="61"]
 [ext_resource type="Script" path="res://Scripts/Player/States/WallClimb.gd" id="62"]
+[ext_resource type="Texture2D" uid="uid://cn2v5dqqu4eac" path="res://Graphics/HUD/hud_air_meter.png" id="62_fp7n6"]
 [ext_resource type="AudioStream" uid="uid://c2agly02ferrw" path="res://Audio/SFX/Player/WaterRun.wav" id="63_k1lus"]
 [ext_resource type="Texture2D" uid="uid://b1k615l251fu5" path="res://Graphics/Misc/WaterSurfaceSplash.png" id="64_ovmgw"]
 [ext_resource type="AudioStream" uid="uid://buu4anko53vx2" path="res://Audio/SFX/Objects/ChemJump.wav" id="65_7v2sx"]
@@ -730,10 +731,194 @@ animations = [{
 "speed": 30.0
 }]
 
+[sub_resource type="Animation" id="Animation_tt157"]
+resource_name = "AirFull"
+length = 1.3
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_eyncb"]
+resource_name = "AirWarning1"
+length = 1.3
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [true, false, true, false, true, false, true, false, true, false, true, false, true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+
+[sub_resource type="Animation" id="Animation_sjogo"]
+resource_name = "AirWarning2"
+length = 1.3
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [true, false, true, false, true, false, true, false, true, false, true, false, true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+
+[sub_resource type="Animation" id="Animation_fgnrq"]
+resource_name = "AirWarning3"
+length = 1.3
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [true, false, true, false, true, false, true, false, true, false, true, false, true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+
+[sub_resource type="Animation" id="Animation_exomt"]
+resource_name = "AirWarning4"
+length = 1.3
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [true, false, true, false, true, false, true, false, true, false, true, false, true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="Animation" id="Animation_4rd80"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qrvtm"]
+_data = {
+"AirFull": SubResource("Animation_tt157"),
+"AirWarning1": SubResource("Animation_eyncb"),
+"AirWarning2": SubResource("Animation_sjogo"),
+"AirWarning3": SubResource("Animation_fgnrq"),
+"AirWarning4": SubResource("Animation_exomt"),
+"RESET": SubResource("Animation_4rd80")
+}
+
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 4096
 collision_mask = 8192
 script = ExtResource("1")
+enable_horizontal_pan = false
+enable_vertical_pan = false
 
 [node name="HitBox" type="CollisionShape2D" parent="."]
 shape = SubResource("1")
@@ -1064,6 +1249,17 @@ sprite_frames = SubResource("SpriteFrames_77phq")
 autoplay = "default"
 frame_progress = 0.400739
 offset = Vector2(-16, -8)
+
+[node name="AirMeter" type="Sprite2D" parent="."]
+visible = false
+z_index = 110
+texture = ExtResource("62_fp7n6")
+hframes = 9
+
+[node name="AirMeterAnim" type="AnimationPlayer" parent="AirMeter"]
+libraries = {
+"": SubResource("AnimationLibrary_qrvtm")
+}
 
 [connection signal="timeout" from="States/Fly/FlyBugStop" to="States/Fly" method="_on_FlyBugStop_timeout"]
 [connection signal="timeout" from="SkidDustTimer" to="States/Normal" method="_on_SkidDustTimer_timeout"]

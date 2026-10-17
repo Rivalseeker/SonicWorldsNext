@@ -132,7 +132,7 @@ animal1 = 2
 animal2 = 3
 defaultLeftBoundry = 0
 defaultTopBoundry = 0
-defaultRightBoundry = 10400
+defaultRightBoundry = 10224
 defaultBottomBoundry = 2048
 
 [node name="HUD" parent="." instance=ExtResource("3_hkybi")]

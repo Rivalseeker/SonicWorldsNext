@@ -47,7 +47,8 @@ func _physics_process(delta):
 func _on_BubbleCollect_body_entered(body):
 	# player get air, ignore if they're already in a bubble
 	if !body.ground and $Bubble.frame >= 6 and body.shield != body.SHIELDS.BUBBLE:
-		body.airTimer = body.defaultAirTime
+		body.reset_air_timer()
+		#body.airTimer = body.defaultAirTime
 		body.sfx[23].play()
 		
 		body.set_state(body.STATES.AIR)

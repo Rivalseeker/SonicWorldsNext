@@ -133,6 +133,7 @@ _data = {
 collision_layer = 8192
 collision_mask = 8192
 script = ExtResource("2")
+amyHammerBoostMultiplier = 1.2
 
 [node name="HitBox" type="CollisionShape2D" parent="."]
 shape = SubResource("1")

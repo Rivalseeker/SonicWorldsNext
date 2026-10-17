@@ -17,10 +17,16 @@ func _physics_process(delta):
 	if (!parent.ground):
 		parent.set_state(parent.STATES.AIR,parent.currentHitbox.ROLL)
 		return
-	# Set normal if speed is 0
-	if (parent.movement.x == 0):
+		
+	# Set normal if up input is pressed (regardless of speed) and no ceiling blocks it, or if speed is 0
+	if ((parent.inputs[parent.INPUTS.YINPUT] < 0 and !parent.check_for_ceiling()) or parent.movement.x == 0):
 		parent.set_state(parent.STATES.NORMAL)
 		return
+		
+	## Set normal if speed is 0
+	#if (parent.movement.x == 0):
+		#parent.set_state(parent.STATES.NORMAL)
+		#return
 	
 	# Lock vertical movement
 	parent.movement.y = min(parent.movement.y,0)

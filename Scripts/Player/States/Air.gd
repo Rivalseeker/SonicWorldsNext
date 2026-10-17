@@ -11,6 +11,9 @@ var dropTimer = 0
 
 var lockDir = false
 
+# Double jump tracking for Amy
+var doubleJumpUsed = false
+
 func _ready():
 	if isJump: # we only want to connect it once so only apply this to the jump variation
 		parent.connect("enemy_bounced",Callable(self,"bounce"))
@@ -23,6 +26,13 @@ func _process(_delta):
 			# Global emeralds use a bit flag, 127 would mean all 7 are 1, see bitwise operations for more info
 			if parent.rings >= 50 and Global.emeralds >= 127:
 				parent.set_state(parent.STATES.SUPER)
+			## Amy hammer spin attack on down input (if hammer is not already out)
+		#elif parent.character == Global.CHARACTERS.AMY and Input.is_action_just_pressed("gm_down") and isJump:
+			#if parent.animator.current_animation != "dropDash":
+				#parent.sfx[30].play() # Hammer sound
+				#parent.animator.play("dropDash") # Spinning hammer attack animation
+				#parent.abilityUsed = true
+				#parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
 		# Shield actions
 		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and isJump):
 			# Super actions
@@ -109,17 +119,26 @@ func _process(_delta):
 						# set initial movement
 						parent.movement = Vector2(parent.direction*4*60,max(parent.movement.y,0))
 						parent.set_state(parent.STATES.GLIDE,parent.currentHitbox.GLIDE)
-					# Amy hammer drop dash
+					## Amy hammer drop dash
+					#Global.CHARACTERS.AMY:
+						## set ability used to true to prevent multiple uses
+						#parent.abilityUsed = true
+						## enable insta shield hitbox if hammer drop dashing
+						#parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = (parent.animator.current_animation == "dropDash")
+						## play hammer sound
+						#parent.sfx[30].play()
+						## play dropDash sound
+						#parent.animator.play("dropDash")
+					# Amy double jump with spinning hammer and drop dash support
 					Global.CHARACTERS.AMY:
-						# set ability used to true to prevent multiple uses
-						parent.abilityUsed = true
-						# enable insta shield hitbox if hammer drop dashing
-						parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = (parent.animator.current_animation == "dropDash")
-						# play hammer sound
-						parent.sfx[30].play()
-						# play dropDash sound
-						parent.animator.play("dropDash")
-						
+						if not doubleJumpUsed:
+							doubleJumpUsed = true
+							parent.movement.y = -parent.jmp * 0.5
+							parent.sfx[0].play() # Jump sound
+							parent.sfx[30].play() # Hammer sound
+							parent.animator.play("dropDash") # Spinning hammer attack animation
+							parent.abilityUsed = true
+							parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
 
 
 func _physics_process(delta):
@@ -239,6 +258,7 @@ func _on_ShieldTimer_timeout():
 # reset drop dash timer and gripping when this state is set
 func state_activated():
 	dropTimer = 0
+	doubleJumpUsed = false
 	parent.poleGrabID = null
 	# disable water run splash
 	parent.action_water_run_handle()

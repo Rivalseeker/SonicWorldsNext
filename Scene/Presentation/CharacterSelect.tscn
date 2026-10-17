@@ -218,8 +218,8 @@ _data = {
 
 [node name="CharacterSelect" type="Node2D"]
 script = ExtResource("5")
-levelLabels = Array[String](["Base Zone Act 1", "Base Zone Act 2", "Emerald Hill Zone 1", "Emerald Hill Zone 2"])
-levelPaths = Array[String](["res://Scene/Zones/BaseZone.tscn", "res://Scene/Zones/BaseZoneAct2.tscn", "res://Scene/Zones/EmeraldHillZone.tscn", "res://Scene/Zones/EmeraldHillZone2.tscn"])
+levelLabels = Array[String](["Base Zone Act 1", "Base Zone Act 2", "Emerald Hill Zone 1", "Emerald Hill Zone 2", "Starter Zone"])
+levelPaths = Array[String](["res://Scene/Zones/BaseZone.tscn", "res://Scene/Zones/BaseZoneAct2.tscn", "res://Scene/Zones/EmeraldHillZone.tscn", "res://Scene/Zones/EmeraldHillZone2.tscn", "res://Scene/Zones/StarterZone.tscn"])
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = -1
@@ -247,7 +247,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="CharacterOrigin" type="Node2D" parent="UI/Labels"]
-position = Vector2(160, 97)
+position = Vector2(240, 116)
 
 [node name="SonicAndTails" type="Node2D" parent="UI/Labels/CharacterOrigin"]
 

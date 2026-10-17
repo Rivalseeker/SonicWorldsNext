@@ -27,7 +27,9 @@ var grv = 0.21875			#gravity
 var releaseJmp = 4			#jump release velocity
 
 var spindashPower = 0.0
+var spindashAutoCharge = false
 var peelOutCharge = 0.0
+var peelOutByAction3 = false
 var abilityUsed = false
 var bounceReaction = 0 # for bubble shield
 var invTime = 0
@@ -42,6 +44,7 @@ var defaultAirTime = 30 # 30 seconds
 var panicTime = 12 # start count down at 12 seconds
 var airWarning = 5 # time between air meter sound
 var airTimer = defaultAirTime
+var airWarningCount = 0 # Tracks number of air warnings triggered
 
 # force roll variables
 var forceRoll = 0 # each force roll object the player is in, this increments.
@@ -133,6 +136,7 @@ var reflective = false # used for reflecting projectiles
 @onready var superAnimator = $Sonic/SuperPalette
 @onready var sprite = $Sonic/Sprite2D
 @onready var spriteController = $Sonic
+@onready var airMeterAnim = $AirMeter/AirMeterAnim
 var centerReference = null # center reference is a center reference point used for hitboxes and shields (the sprite node need a node called "CenterReference" for this to work)
 var lastActiveAnimation = ""
 var defaultSpriteOffset = Vector2.ZERO
@@ -145,6 +149,20 @@ var camLookOff = 0
 var camAdjust = Vector2.ZERO
 var cameraDragLerp = 0
 var camLockTime = 0
+
+# Panning configuration & state
+@export var enable_horizontal_pan: bool = true
+@export var enable_vertical_pan: bool = true
+@export var max_cam_pan_horizontal: float = 213.0
+@export var max_cam_pan_vertical: float = 120.0
+@export var horizontal_pan_speed_threshold: float = 3.5 * 60.0
+@export var vertical_pan_speed_threshold: float = 3.5 * 60.0
+
+var camPanAmount = 0.0      
+var camPanVerticalAmount = 0.0
+#var maxCamPan = 213.0
+var lastPositionX = 0.0 # Tracks real world-space position
+var lastPositionY = 0.0
 
 # boundries
 var limitLeft = 0
@@ -271,6 +289,7 @@ func _ready():
 	# Camera settings
 	get_parent().call_deferred("add_child", (camera))
 	camera.enabled = (playerControl == 1)
+	camera.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
 	var viewSize = get_viewport_rect().size
 	camera.drag_left_margin =   camDist.x/viewSize.x
 	camera.drag_right_margin =  camDist.x/viewSize.x
@@ -280,6 +299,8 @@ func _ready():
 	camera.drag_vertical_enabled = true
 	_con = connect("positionChanged",Callable(self,"on_position_changed"))
 	camera.global_position = global_position
+	lastPositionX = global_position.x
+	lastPositionY = global_position.y
 	
 	# Tails carry stuff
 	$TailsCarryBox/HitBox.disabled = true
@@ -591,18 +612,31 @@ func _process(delta):
 	
 	if animator.current_animation != "":
 		lastActiveAnimation = animator.current_animation
+	
+	# Sync AirMeter flip with player direction (false if right, true if left)
+	$AirMeter.scale.x = direction
 		
 	# Time over
 	if Global.levelTime >= Global.maxTime:
 		kill(true)
 		
 	
-	# Water timer
+# Water timer
 	if water and shield != SHIELDS.BUBBLE:
 		if airTimer > 0:
 			if playerControl == 1:
 				if snapped(airTimer,airWarning) != snapped(airTimer-delta,airWarning) and airTimer > panicTime:
+					airWarningCount += 1
+					if airWarningCount >= 3:
+						sfx[24].pitch_scale = 1.2
+					else:
+						sfx[24].pitch_scale = 1.0
 					sfx[24].play()
+					
+					if is_instance_valid(airMeterAnim) and airWarningCount <= 4:
+						$AirMeter.visible = true
+						airMeterAnim.play("AirWarning" + str(airWarningCount))
+			
 			# Count down timer
 			if airTimer <= panicTime and snapped(airTimer,1.8) != snapped(airTimer-delta,1.8):
 				if round(airTimer/1.8)-2 >= 0:
@@ -611,11 +645,39 @@ func _process(delta):
 					count.countTime = clamp(round(airTimer/1.8)-2,0,5)
 					count.global_position = global_position+Vector2(8*direction,0)
 			airTimer -= delta
-		elif currentState != STATES.DIE: # Drown (kill checks if air timer is greater then 0)
+		elif currentState != STATES.DIE: # Drown
 			$BubbleTimer.start(0.1)
 			kill()
 	else:
 		airTimer = defaultAirTime
+		airWarningCount = 0
+		sfx[24].pitch_scale = 1.0
+	
+	#if water and shield != SHIELDS.BUBBLE:
+		#if airTimer > 0:
+			#if playerControl == 1:
+				#if snapped(airTimer,airWarning) != snapped(airTimer-delta,airWarning) and airTimer > panicTime:
+					#airWarningCount += 1
+					#if airWarningCount >= 3:
+						#sfx[24].pitch_scale = 1.2
+					#else:
+						#sfx[24].pitch_scale = 1.0
+					#sfx[24].play()
+			## Count down timer
+			#if airTimer <= panicTime and snapped(airTimer,1.8) != snapped(airTimer-delta,1.8):
+				#if round(airTimer/1.8)-2 >= 0:
+					#var count = CountDown.instantiate()
+					#get_parent().add_child(count)
+					#count.countTime = clamp(round(airTimer/1.8)-2,0,5)
+					#count.global_position = global_position+Vector2(8*direction,0)
+			#airTimer -= delta
+		#elif currentState != STATES.DIE: # Drown (kill checks if air timer is greater then 0)
+			#$BubbleTimer.start(0.1)
+			#kill()
+	#else:
+		#airTimer = defaultAirTime
+		#airWarningCount = 0
+		#sfx[24].pitch_scale = 1.0
 	
 	# drowning theme related
 	if playerControl == 1:
@@ -633,6 +695,15 @@ func _process(delta):
 	
 	if (active_gimmick != null):
 		active_gimmick.player_process(self, delta)
+
+# Helper function to reset air timer, warning count, warning sound pitch, and play AirFull
+func reset_air_timer():
+	airTimer = defaultAirTime
+	airWarningCount = 0
+	sfx[24].pitch_scale = 1.0
+	if is_instance_valid(airMeterAnim):
+		$AirMeter.visible = true
+		airMeterAnim.play("AirFull")
 
 func _physics_process(delta):
 	super(delta)
@@ -803,6 +874,7 @@ func _physics_process(delta):
 		if global_position.y > Global.waterLevel and !water:
 			water = true
 			switch_physics()
+			reset_air_timer() # <--- Plays AirFull upon entering water
 			movement.x *= 0.5
 			movement.y *= 0.25
 			if currentState != STATES.RESPAWN and movement.y != 0:
@@ -819,6 +891,7 @@ func _physics_process(delta):
 		if global_position.y < Global.waterLevel and water:
 			water = false
 			switch_physics()
+			reset_air_timer() # <--- Plays AirFull upon exiting water
 			movement.y *= 2
 			sfx[17].play()
 			var splash = Particle.instantiate()
@@ -1025,6 +1098,7 @@ func set_shield(setShieldID):
 		SHIELDS.BUBBLE:
 			shieldSprite.play("Bubble")
 			sfx[12].play()
+			reset_air_timer()
 		_: # disable
 			shieldSprite.visible = false
 
@@ -1275,6 +1349,7 @@ func _on_SparkleTimer_timeout():
 func on_position_changed():
 	cam_update(true)
 
+
 func cam_update(forceMove = false):
 	# Cancel camera movement
 	if currentState == STATES.DIE:
@@ -1300,30 +1375,157 @@ func cam_update(forceMove = false):
 				_:
 					camAdjust = Vector2.ZERO
 
-	# Camera lock
-	# remove round() if you are not making a pixel perfect game
-	var getPos = (global_position+Vector2(0,camLookOff)+camAdjust).round()
+	# --- PANNING LOGIC ---
+	var actual_velocity_x = (global_position.x - lastPositionX) / get_physics_process_delta_time()
+	var actual_velocity_y = (global_position.y - lastPositionY) / get_physics_process_delta_time()
+	
+	# Calculate total pixel displacement magnitude (combining X and Y)
+	var total_speed = global_position.distance_to(Vector2(lastPositionX, lastPositionY)) / get_physics_process_delta_time()
+	
+	# If grounded, factor in slopes (total_speed). If airborne, only look at horizontal movement.
+	var evaluated_speed = total_speed if ground else abs(actual_velocity_x)
+	
+	# Horizontal Panning
+	var targetPan = 0.0
+	#var panSpeedThreshold = 3.5 * 60.0 
+	
+	if enable_horizontal_pan and evaluated_speed > horizontal_pan_speed_threshold:
+		var speedRatio = (evaluated_speed - horizontal_pan_speed_threshold) / (top - horizontal_pan_speed_threshold)
+		var panDirection = sign(actual_velocity_x)
+		if panDirection == 0: 
+			panDirection = direction 
+		targetPan = panDirection * clamp(speedRatio * max_cam_pan_horizontal, 0.0, max_cam_pan_horizontal)
+	
+	camPanAmount = lerp(camPanAmount, float(targetPan), 2.0 * get_physics_process_delta_time())
+
+	# Vertical Panning
+	var targetVerticalPan = 0.0
+	if enable_vertical_pan:
+		var vertical_speed = abs(actual_velocity_y)
+		if vertical_speed > vertical_pan_speed_threshold:
+			var vSpeedRatio = (vertical_speed - vertical_pan_speed_threshold) / (top - vertical_pan_speed_threshold)
+			var panDirectionY = sign(actual_velocity_y) # > 0 is down, < 0 is up
+			targetVerticalPan = panDirectionY * clamp(vSpeedRatio * max_cam_pan_vertical, 0.0, max_cam_pan_vertical)
+	
+	camPanVerticalAmount = lerp(camPanVerticalAmount, float(targetVerticalPan), 2.0 * get_physics_process_delta_time())
+
+	# Store current position for the next frame
+	lastPositionX = global_position.x
+	lastPositionY = global_position.y
+	# ---------------------
+
+	# Camera lock position including horizontal pan, look offset, and vertical pan
+	var getPos = (global_position + Vector2(camPanAmount, camLookOff + camPanVerticalAmount) + camAdjust).round()
+	
 	if camLockTime <= 0 and (forceMove or camera.global_position.distance_to(getPos) <= 16):
-		# limit_length speed camera
-		camera.global_position.x = move_toward(camera.global_position.x,getPos.x,16*60*get_physics_process_delta_time())
-		camera.global_position.y = move_toward(camera.global_position.y,getPos.y,16*60*get_physics_process_delta_time())
+		var dynamic_cam_speed_x = max(16.0 * 60.0, abs(actual_velocity_x))
+		camera.global_position.x = move_toward(camera.global_position.x, getPos.x, dynamic_cam_speed_x * get_physics_process_delta_time())
+		camera.global_position.y = move_toward(camera.global_position.y, getPos.y, 16.0 * 60.0 * get_physics_process_delta_time())
+		
 		# clamp to region
-		camera.global_position.x = clamp(camera.global_position.x,limitLeft,limitRight)
-		camera.global_position.y = clamp(camera.global_position.y,limitTop,limitBottom)
-		#camera.global_position = camera.global_position.move_toward(getPos,16*60*get_physics_process_delta_time())
-		# uncomment below for immediate camera
-		#camera.global_position = getPos
+		camera.global_position.x = clamp(camera.global_position.x, limitLeft, limitRight)
+		camera.global_position.y = clamp(camera.global_position.y, limitTop, limitBottom)
 	
-	# Ratchet camera scrolling (locks the camera behind the player)
+	# Ratchet camera scrolling
 	if rachetScrollLeft:
-		limitLeft = max(limitLeft,camera.get_screen_center_position().x-viewSize.x/2)
+		limitLeft = max(limitLeft, camera.get_screen_center_position().x - viewSize.x / 2)
 	if rachetScrollRight:
-		limitRight = max(limitRight,camera.get_screen_center_position().x+viewSize.x/2)
-	
+		limitRight = max(limitRight, camera.get_screen_center_position().x + viewSize.x / 2)
 	if rachetScrollTop:
-		limitTop = max(limitTop,camera.get_screen_center_position().y-viewSize.y/2)
+		limitTop = max(limitTop, camera.get_screen_center_position().y - viewSize.y / 2)
 	if rachetScrollBottom:
-		limitBottom = max(limitBottom,camera.get_screen_center_position().y+viewSize.y/2)
+		limitBottom = max(limitBottom, camera.get_screen_center_position().y + viewSize.y / 2)
+
+
+#func cam_update(forceMove = false):
+	## Cancel camera movement
+	#if currentState == STATES.DIE:
+		#return false
+	## Camera vertical drag
+	#var viewSize = get_viewport_rect().size
+	#
+	#camera.drag_top_margin =    lerp(0.0,float(camDist.y/viewSize.y),float(cameraDragLerp))
+	#camera.drag_bottom_margin = camera.drag_top_margin
+	#
+	## Extra drag margin for rolling
+	#match(character):
+		#Global.CHARACTERS.TAILS:
+			#match($HitBox.shape.size):
+				#currentHitbox.ROLL:
+					#camAdjust = Vector2(0,-1)
+				#_:
+					#camAdjust = Vector2.ZERO
+		#_: # default
+			#match($HitBox.shape.size):
+				#currentHitbox.ROLL:
+					#camAdjust = Vector2(0,-5)
+				#_:
+					#camAdjust = Vector2.ZERO
+#
+#
+#
+	#
+	## --- NEW PANNING LOGIC ---
+	#var actual_velocity_x = (global_position.x - lastPositionX) / get_physics_process_delta_time()
+	#
+	## Calculate total pixel displacement magnitude (combining X and Y)
+	#var total_speed = global_position.distance_to(Vector2(lastPositionX, lastPositionY)) / get_physics_process_delta_time()
+	#
+	## If grounded, factor in slopes (total_speed). If airborne, only look at horizontal movement.
+	#var evaluated_speed = total_speed if ground else abs(actual_velocity_x)
+	#
+	#var targetPan = 0.0
+	#var panSpeedThreshold = 3.5 * 60.0 
+	#
+	#if evaluated_speed > panSpeedThreshold:
+		#var speedRatio = (evaluated_speed - panSpeedThreshold) / (top - panSpeedThreshold)
+		#
+		## Determine horizontal direction, defaulting to facing direction if perfectly vertical
+		#var panDirection = sign(actual_velocity_x)
+		#if panDirection == 0: 
+			#panDirection = direction 
+		#
+		#targetPan = panDirection * clamp(speedRatio * maxCamPan, 0.0, maxCamPan)
+	#
+	#camPanAmount = lerp(camPanAmount, float(targetPan), 2.0 * get_physics_process_delta_time())
+#
+	## Store the current position for the next frame
+	#lastPositionX = global_position.x
+	#lastPositionY = global_position.y
+	## -------------------------
+	#
+	#
+#
+	## Camera lock
+	## remove round() if you are not making a pixel perfect game
+	##var getPos = (global_position+Vector2(0,camLookOff)+camAdjust).round()
+	#var getPos = (global_position+Vector2(camPanAmount,camLookOff)+camAdjust).round()
+	#if camLockTime <= 0 and (forceMove or camera.global_position.distance_to(getPos) <= 16):
+		## limit_length speed camera
+		## Dynamically calculate the maximum camera speed based on the player's actual velocity
+		#var dynamic_cam_speed_x = max(16.0 * 60.0, abs(actual_velocity_x))
+		#
+		#camera.global_position.x = move_toward(camera.global_position.x, getPos.x, dynamic_cam_speed_x * get_physics_process_delta_time())
+		#camera.global_position.y = move_toward(camera.global_position.y, getPos.y, 16.0 * 60.0 * get_physics_process_delta_time())
+		##camera.global_position.x = move_toward(camera.global_position.x,getPos.x,16*60*get_physics_process_delta_time())
+		##camera.global_position.y = move_toward(camera.global_position.y,getPos.y,16*60*get_physics_process_delta_time())
+		## clamp to region
+		#camera.global_position.x = clamp(camera.global_position.x,limitLeft,limitRight)
+		#camera.global_position.y = clamp(camera.global_position.y,limitTop,limitBottom)
+		##camera.global_position = camera.global_position.move_toward(getPos,16*60*get_physics_process_delta_time())
+		## uncomment below for immediate camera
+		##camera.global_position = getPos
+	#
+	## Ratchet camera scrolling (locks the camera behind the player)
+	#if rachetScrollLeft:
+		#limitLeft = max(limitLeft,camera.get_screen_center_position().x-viewSize.x/2)
+	#if rachetScrollRight:
+		#limitRight = max(limitRight,camera.get_screen_center_position().x+viewSize.x/2)
+	#
+	#if rachetScrollTop:
+		#limitTop = max(limitTop,camera.get_screen_center_position().y-viewSize.y/2)
+	#if rachetScrollBottom:
+		#limitBottom = max(limitBottom,camera.get_screen_center_position().y+viewSize.y/2)
 
 func lock_camera(time = 1):
 	camLockTime = max(time,camLockTime)

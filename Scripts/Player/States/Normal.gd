@@ -34,21 +34,46 @@ func state_exit():
 
 func _process(delta):
 	
-	# jumping / rolling and more (note, you'll want to adjust the other actions if your character does something different)
+	# jumping / rolling and Spin Dash initiation
 	if parent.any_action_pressed():
-		if (parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] > 0):
+		if parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] > 0:
+			# Entered from crouch -> Traditional tap-to-charge Spin Dash
+			parent.spindashAutoCharge = false
 			parent.animator.play("spinDash")
 			parent.sfx[2].play()
 			parent.sfx[2].pitch_scale = 1
 			parent.spindashPower = 0
-			parent.animator.play("spinDash")
 			parent.set_state(parent.STATES.SPINDASH)
-		# peelout (Sonic only)
+			return
+		elif parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] <= 0 and parent.inputs[parent.INPUTS.ACTION] == 1:
+			# Entered from standing still with ACTION -> Auto hold-to-charge over time
+			parent.spindashAutoCharge = true
+			parent.animator.play("spinDash")
+			parent.sfx[2].play()
+			parent.sfx[2].pitch_scale = 1
+			parent.spindashPower = 0
+			parent.set_state(parent.STATES.SPINDASH)
+			return
+		# peelout via ACTION3 shortcut (Sonic only)
+		elif (parent.movement.x == 0 and parent.inputs[parent.INPUTS.ACTION3] > 0 and parent.character == Global.CHARACTERS.SONIC):
+			parent.sfx[2].play()
+			parent.sfx[2].pitch_scale = 1
+			parent.spindashPower = 0
+			parent.peelOutByAction3 = true
+			parent.set_state(parent.STATES.PEELOUT)
+		# peelout (Sonic only - standard Up input)
 		elif (parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] < 0 and parent.character == Global.CHARACTERS.SONIC):
 			parent.sfx[2].play()
 			parent.sfx[2].pitch_scale = 1
 			parent.spindashPower = 0
+			parent.peelOutByAction3 = false
 			parent.set_state(parent.STATES.PEELOUT)
+		## peelout (Sonic only)
+		#elif (parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] < 0 and parent.character == Global.CHARACTERS.SONIC):
+			#parent.sfx[2].play()
+			#parent.sfx[2].pitch_scale = 1
+			#parent.spindashPower = 0
+			#parent.set_state(parent.STATES.PEELOUT)
 		else:
 			# Player cannot jump unless a ceiling check fails.
 			if !parent.check_for_ceiling():
@@ -58,14 +83,39 @@ func _process(delta):
 				parent.set_state(parent.STATES.JUMP)
 		return
 	
+	
+	## jumping / rolling and more (note, you'll want to adjust the other actions if your character does something different)
+	#if parent.any_action_pressed():
+		#if (parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] > 0):
+			#parent.animator.play("spinDash")
+			#parent.sfx[2].play()
+			#parent.sfx[2].pitch_scale = 1
+			#parent.spindashPower = 0
+			#parent.animator.play("spinDash")
+			#parent.set_state(parent.STATES.SPINDASH)
+		## peelout (Sonic only)
+		#elif (parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] < 0 and parent.character == Global.CHARACTERS.SONIC):
+			#parent.sfx[2].play()
+			#parent.sfx[2].pitch_scale = 1
+			#parent.spindashPower = 0
+			#parent.set_state(parent.STATES.PEELOUT)
+		#else:
+			## Player cannot jump unless a ceiling check fails.
+			#if !parent.check_for_ceiling():
+				## reset animations
+				#parent.animator.play("RESET")
+				#parent.action_jump()
+				#parent.set_state(parent.STATES.JUMP)
+		#return
+	
 	if parent.ground and !skid:
 		if parent.movement.x == 0:
 			if (parent.inputs[parent.INPUTS.YINPUT] > 0):
-				lookTimer = max(0,lookTimer+delta*0.5)
+				lookTimer = max(0,lookTimer+delta*1.5)
 				if parent.lastActiveAnimation != "crouch":
 					parent.animator.play("crouch")
 			elif (parent.inputs[parent.INPUTS.YINPUT] < 0):
-				lookTimer = min(0,lookTimer-delta*0.5)
+				lookTimer = min(0,lookTimer-delta*1.5)
 				if parent.lastActiveAnimation != "lookUp":
 					parent.animator.play("lookUp")
 			else:
@@ -182,11 +232,18 @@ func _process(delta):
 func _physics_process(delta):
 	
 	# rolling
-	if (parent.inputs[parent.INPUTS.YINPUT] == 1 and parent.inputs[parent.INPUTS.XINPUT] == 0 and abs(parent.movement.x) > 0.5*60):
+	if (parent.inputs[parent.INPUTS.YINPUT] == 1 and abs(parent.movement.x) > 0.5*60):
 		parent.set_state(parent.STATES.ROLL)
 		parent.animator.play("roll")
 		parent.sfx[1].play()
 		return
+	
+	## rolling
+	#if (parent.inputs[parent.INPUTS.YINPUT] == 1 and parent.inputs[parent.INPUTS.XINPUT] == 0 and abs(parent.movement.x) > 0.5*60):
+		#parent.set_state(parent.STATES.ROLL)
+		#parent.animator.play("roll")
+		#parent.sfx[1].play()
+		#return
 	
 	# set air state
 	if (!parent.ground):

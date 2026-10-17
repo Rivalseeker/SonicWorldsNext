@@ -786,9 +786,9 @@ color = Color(0, 0, 0, 1)
 layout_mode = 0
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -94.5
+offset_left = -174.5
 offset_top = -203.0
-offset_right = 94.5
+offset_right = 14.5
 size_flags_stretch_ratio = 0.0
 texture = ExtResource("7_ccygi")
 stretch_mode = 2
@@ -835,6 +835,16 @@ grow_vertical = 2
 texture = ExtResource("10_xpi0a")
 stretch_mode = 1
 
+[node name="PatternLeft2" type="TextureRect" parent="LevelCard/PatternLeft/PatternLeft"]
+layout_mode = 1
+anchors_preset = -1
+offset_top = 256.0
+offset_right = 64.0
+offset_bottom = 512.0
+grow_vertical = 2
+texture = ExtResource("10_xpi0a")
+stretch_mode = 1
+
 [node name="RightRatio" type="Control" parent="LevelCard"]
 anchors_preset = 0
 anchor_left = 1.0
@@ -856,16 +866,31 @@ anchor_left = 1.0
 anchor_top = 0.003
 anchor_right = 1.0
 anchor_bottom = 0.003
-offset_left = -32.0
-offset_top = -12.352
-offset_right = 4832.0
-offset_bottom = 243.648
+offset_top = -12.49
+offset_right = 4864.0
+offset_bottom = 243.51
+grow_horizontal = 0
+grow_vertical = 2
+texture = ExtResource("10_xpi0a")
+stretch_mode = 1
+
+[node name="PatternRight2" type="TextureRect" parent="LevelCard/RightRatio/PatternRight/PatternRight"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.003
+anchor_right = 1.0
+anchor_bottom = 0.003
+offset_left = -4864.0
+offset_top = 255.232
+offset_bottom = 511.232
 grow_horizontal = 0
 grow_vertical = 2
 texture = ExtResource("10_xpi0a")
 stretch_mode = 1
 
 [node name="CardMover" type="AnimationPlayer" parent="LevelCard"]
+process_mode = 1
 libraries = {
 "": SubResource("AnimationLibrary_15hsr")
 }
