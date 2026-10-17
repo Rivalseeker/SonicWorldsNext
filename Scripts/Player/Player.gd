@@ -613,8 +613,8 @@ func _process(delta):
 	if animator.current_animation != "":
 		lastActiveAnimation = animator.current_animation
 	
-	# Sync AirMeter flip with player direction (false if right, true if left)
-	$AirMeter.scale.x = direction
+	## Sync AirMeter flip with player direction (false if right, true if left)
+	#$AirMeter.scale.x = direction
 		
 	# Time over
 	if Global.levelTime >= Global.maxTime:
