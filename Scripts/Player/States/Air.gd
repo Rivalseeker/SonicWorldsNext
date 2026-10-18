@@ -26,13 +26,11 @@ func _process(_delta):
 			# Global emeralds use a bit flag, 127 would mean all 7 are 1, see bitwise operations for more info
 			if parent.rings >= 50 and Global.emeralds >= 127:
 				parent.set_state(parent.STATES.SUPER)
-			## Amy hammer spin attack on down input (if hammer is not already out)
-		#elif parent.character == Global.CHARACTERS.AMY and Input.is_action_just_pressed("gm_down") and isJump:
-			#if parent.animator.current_animation != "dropDash":
-				#parent.sfx[30].play() # Hammer sound
-				#parent.animator.play("dropDash") # Spinning hammer attack animation
-				#parent.abilityUsed = true
-				#parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
+		# Amy hammer spin attack on down input while rolling in the air (from jump or edge)
+		elif parent.character == Global.CHARACTERS.AMY and Input.is_action_just_pressed(parent.inputActions[1][1]) and parent.animator.current_animation == "roll":
+			parent.sfx[30].play() # Hammer sound
+			parent.animator.play("dropDash") # Spinning hammer attack animation
+			parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
 		# Shield actions
 		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and isJump):
 			# Super actions
@@ -258,8 +256,17 @@ func _on_ShieldTimer_timeout():
 # reset drop dash timer and gripping when this state is set
 func state_activated():
 	dropTimer = 0
-	doubleJumpUsed = false
+	doubleJumpUsed = !isJump # False if jumped from ground (allows double jump), True if rolled/fell off an edge (disallows double jump)
+	#doubleJumpUsed = false
 	parent.poleGrabID = null
+	
+	# Reset Amy's hammer / drop dash attack state when entering/re-entering air (such as hitting a spring)
+	parent.abilityUsed = false
+	if parent.shieldSprite and parent.shieldSprite.has_node("InstaShieldHitbox/HitBox"):
+		parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").set_deferred("disabled", true)
+	if parent.animator.current_animation == "dropDash":
+		parent.animator.play("RESET")
+	
 	# disable water run splash
 	parent.action_water_run_handle()
 

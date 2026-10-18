@@ -209,3 +209,28 @@ offset_bottom = 264.0
 texture = ExtResource("10_mse8f")
 expand_mode = 1
 stretch_mode = 1
+
+[node name="ParallaxLayerJ5" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
+motion_scale = Vector2(0.9, 1)
+motion_mirroring = Vector2(512, 0)
+
+[node name="TextureRect" type="TextureRect" parent="ParallaxLayerJ5"]
+offset_top = 264.0
+offset_right = 512.0
+offset_bottom = 280.0
+texture = ExtResource("10_mse8f")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="ParallaxLayerJ6" type="ParallaxLayer" parent="."]
+position = Vector2(0, -16)
+motion_mirroring = Vector2(512, 0)
+
+[node name="TextureRect" type="TextureRect" parent="ParallaxLayerJ6"]
+offset_top = 280.0
+offset_right = 512.0
+offset_bottom = 296.0
+texture = ExtResource("10_mse8f")
+expand_mode = 1
+stretch_mode = 1
