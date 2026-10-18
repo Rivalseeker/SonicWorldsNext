@@ -32,7 +32,7 @@ func _process(_delta):
 			parent.animator.play("dropDash") # Spinning hammer attack animation
 			parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
 		# Shield actions
-		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and isJump):
+		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and (isJump or (parent.character == Global.CHARACTERS.SONIC and parent.animator.current_animation == "roll"))):
 			# Super actions
 			if parent.isSuper and (parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.AMY):
 				parent.abilityUsed = true # has to be set to true for drop dash (Sonic and amy only)
@@ -61,6 +61,36 @@ func _process(_delta):
 										parent.shieldSprite.stop()
 									# disable insta shield
 									parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = true
+		## Shield actions
+		#elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and isJump):
+			## Super actions
+			#if parent.isSuper and (parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.AMY):
+				#parent.abilityUsed = true # has to be set to true for drop dash (Sonic and amy only)
+			## Normal actions
+			#else:
+				#match (parent.character):
+					#Global.CHARACTERS.SONIC:
+						## set ability used to true to prevent multiple uses
+						#parent.abilityUsed = true
+						## check that the invincibility barrier isn't visible
+						#if parent.supTime <= 0:
+							#match (parent.shield):
+								## insta shield
+								#parent.SHIELDS.NONE:
+									#parent.sfx[16].play()
+									#parent.shieldSprite.play("Insta")
+									#parent.shieldSprite.frame = 0
+									#parent.shieldSprite.visible = true
+									## enable insta shield hitbox
+									#parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
+									## wait for animation for the shield to finish
+									#await parent.shieldSprite.animation_finished
+									## check shields hasn't changed
+									#if (parent.shield == parent.SHIELDS.NONE):
+										#parent.shieldSprite.visible = false
+										#parent.shieldSprite.stop()
+									## disable insta shield
+									#parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = true
 								
 								# elec shield action
 								parent.SHIELDS.ELEC:
