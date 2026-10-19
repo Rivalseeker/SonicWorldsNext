@@ -124,17 +124,54 @@ func physics_collision(body, hitVector):
 		# check if player is not an ai or spindashing
 		# if they are then destroy
 		if body.playerControl == 1 and body.currentState != body.STATES.SPINDASH:
-			body.movement.y = -abs(body.movement.y)
-			
 			if body.currentState == body.STATES.ROLL:
-				body.movement.y = 0
-			body.ground = false
-			playerTouch = body
-			destroy()
+				# Ground roll interaction: destroy monitor without bouncing or exiting roll
+				playerTouch = body
+				destroy()
+			else:
+				# Air / Jump interaction: bounce off
+				body.movement.y = -abs(body.movement.y)
+				body.ground = false
+				playerTouch = body
+				destroy()
 		else:
 			body.ground = true
 			body.movement.y = 0
 	return true
+
+## physics collision check, see physics object
+#func physics_collision(body, hitVector):
+	## Monitor head bouncing
+	#if hitVector.y < 0:
+		#yspeed = -1.5*60
+		#physics = true
+		#if body.movement.y < 0:
+			#body.movement.y *= -1
+	## check that player has the rolling layer bit set
+	#elif body.get_collision_layer_value(20):
+		## Bounce from below
+		#if hitVector.x != 0:
+			## check conditions for interaction (and the player is the first player)
+			#if body.movement.y >= 0 and body.movement.x != 0 and body.playerControl == 1:
+				#playerTouch = body
+				#destroy()
+			#else:
+				## Stop horizontal movement
+				#body.movement.x = 0
+		## check if player is not an ai or spindashing
+		## if they are then destroy
+		#if body.playerControl == 1 and body.currentState != body.STATES.SPINDASH:
+			#body.movement.y = -abs(body.movement.y)
+			#
+			#if body.currentState == body.STATES.ROLL:
+				#body.movement.y = 0
+			#body.ground = false
+			#playerTouch = body
+			#destroy()
+		#else:
+			#body.ground = true
+			#body.movement.y = 0
+	#return true
 
 # insta shield should break instantly
 func _on_InstaArea_area_entered(area):
