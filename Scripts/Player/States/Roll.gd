@@ -18,8 +18,8 @@ func _physics_process(delta):
 		parent.set_state(parent.STATES.AIR,parent.currentHitbox.ROLL)
 		return
 		
-	# Set normal if up input is pressed (regardless of speed) and no ceiling blocks it, or if speed is 0
-	if ((parent.inputs[parent.INPUTS.YINPUT] < 0 and !parent.check_for_ceiling()) or parent.movement.x == 0):
+	# Set normal only if not inside a ForceRoll area, and either up input is pressed or speed is 0
+	if parent.forceRoll <= 0 and ((parent.inputs[parent.INPUTS.YINPUT] < 0 and !parent.check_for_ceiling()) or parent.movement.x == 0):
 		parent.set_state(parent.STATES.NORMAL)
 		return
 		

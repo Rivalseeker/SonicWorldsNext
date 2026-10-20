@@ -32,7 +32,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.6, 1.1),
 "transitions": PackedFloat32Array(0.5, 0.5, 1),
 "update": 0,
-"values": [Vector2(-65, 163), Vector2(-65, 163), Vector2(223, 163)]
+"values": [Vector2(-65, 163), Vector2(-65, 163), Vector2(291.5, 163)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -44,7 +44,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.1, 1.2),
 "transitions": PackedFloat32Array(0.5, 0.5, 1),
 "update": 0,
-"values": [Vector2(411, 98), Vector2(411, 98), Vector2(191, 98)]
+"values": [Vector2(411, 98), Vector2(411, 98), Vector2(259.5, 98)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -56,7 +56,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.2, 0.8),
 "transitions": PackedFloat32Array(0.5, 0.5, 1),
 "update": 0,
-"values": [Vector2(-130, 125), Vector2(-130, 125), Vector2(175, 125)]
+"values": [Vector2(-130, 125), Vector2(-130, 125), Vector2(243.5, 125)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -104,7 +104,7 @@ tracks/6/keys = {
 "times": PackedFloat32Array(0, 0.3, 0.9),
 "transitions": PackedFloat32Array(0.5, 0.5, 1),
 "update": 0,
-"values": [Vector2(-64, 108), Vector2(-64, 108), Vector2(84, 108)]
+"values": [Vector2(-64, 108), Vector2(-64, 108), Vector2(152.5, 108)]
 }
 tracks/7/type = "value"
 tracks/7/imported = false
@@ -116,7 +116,7 @@ tracks/7/keys = {
 "times": PackedFloat32Array(0, 0.5, 0.9),
 "transitions": PackedFloat32Array(0.5, 0.5, 1),
 "update": 0,
-"values": [Vector2(156, -39), Vector2(156, -39), Vector2(156, 72)]
+"values": [Vector2(156, -39), Vector2(156, -39), Vector2(224.5, 72)]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
@@ -206,15 +206,16 @@ colors = PackedColorArray(1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1)
 
 [node name="TitleScreen" type="Node2D"]
 script = ExtResource("2")
+speed = 1
 
 [node name="BackCog" type="Sprite2D" parent="."]
-position = Vector2(156, -39)
+position = Vector2(224.5, 72)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(114, 21, 52, 54)
 
 [node name="BigCog" type="Sprite2D" parent="."]
-position = Vector2(-64, 108)
+position = Vector2(152.5, 108)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(0, 0, 97, 97)
@@ -232,34 +233,34 @@ region_enabled = true
 region_rect = Rect2(181, 29, 39, 38)
 
 [node name="Worlds" type="Sprite2D" parent="."]
-position = Vector2(-130, 125)
+position = Vector2(243.5, 125)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(2, 173, 182, 36)
 
 [node name="Arrow1" type="Sprite2D" parent="Worlds"]
 z_index = -1
-position = Vector2(78.8056, 0)
+position = Vector2(95, 0)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(190, 173, 17, 36)
 
 [node name="Arrow2" type="Sprite2D" parent="Worlds"]
 z_index = -1
-position = Vector2(75.8055, 0)
+position = Vector2(107, 0)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(214, 173, 15, 36)
 
 [node name="Arrow3" type="Sprite2D" parent="Worlds"]
 z_index = -1
-position = Vector2(64.8055, 0)
+position = Vector2(117, 0)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(235, 173, 12, 36)
 
 [node name="Sonic" type="Sprite2D" parent="."]
-position = Vector2(411, 98)
+position = Vector2(259.5, 98)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(150, 107, 140, 38)
@@ -272,7 +273,7 @@ region_enabled = true
 region_rect = Rect2(243, 37, 21, 22)
 
 [node name="Next" type="Sprite2D" parent="."]
-position = Vector2(-65, 163)
+position = Vector2(291.5, 163)
 texture = ExtResource("2_qt26u")
 region_enabled = true
 region_rect = Rect2(142, 235, 128, 33)
@@ -290,12 +291,10 @@ anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-scale = Vector2(1, 1e-05)
 pivot_offset = Vector2(0, 70)
 color = Color(0.533333, 0.533333, 0.533333, 1)
 
 [node name="Labels" type="Control" parent="CanvasLayer"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -314,7 +313,7 @@ offset_right = 136.0
 grow_vertical = 0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_yuhp3")
-text = "v4.3 GIT MAIN"
+text = "v4.3 rival FORK MAIN"
 vertical_alignment = 2
 uppercase = true
 
@@ -383,7 +382,7 @@ libraries = {
 autoplay = "TitleAssemble"
 
 [node name="Celebrations" type="CPUParticles2D" parent="."]
-position = Vector2(152, 112)
+position = Vector2(224, 112)
 emitting = false
 amount = 32
 preprocess = 0.5
