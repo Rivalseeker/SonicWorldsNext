@@ -32,7 +32,7 @@ func _process(_delta):
 			parent.animator.play("dropDash") # Spinning hammer attack animation
 			parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
 		# Shield actions
-		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and (isJump or (parent.character == Global.CHARACTERS.SONIC and parent.animator.current_animation == "roll"))):
+		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and (isJump or (parent.animator.current_animation == "roll" and (parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.TAILS or parent.character == Global.CHARACTERS.KNUCKLES)))):
 			# Super actions
 			if parent.isSuper and (parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.AMY):
 				parent.abilityUsed = true # has to be set to true for drop dash (Sonic and amy only)

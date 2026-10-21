@@ -3,7 +3,7 @@ extends PlayerState
 # tails flight
 var flightTime = 8*60
 var flyGrav = 0.03125
-var actionPressed = true
+#var actionPressed = true
 
 var flyHitBox
 var carryHitBox
@@ -19,7 +19,7 @@ func state_activated():
 	flyGrav = 0.03125
 	flyHitBox.disabled = false
 	carryHitBox.disabled = false
-	actionPressed = true
+	#actionPressed = true
 	
 func state_exit():
 	flyHitBox.call_deferred("set","disabled",true)
@@ -116,22 +116,38 @@ func _physics_process(delta):
 	parent.sprite.flip_h = (parent.direction < 0)
 	
 	# Flight logic
-	parent.movement.y += flyGrav/GlobalFunctions.div_by_delta(delta)
-	
+	parent.movement.y += flyGrav / GlobalFunctions.div_by_delta(delta)
 	flightTime -= delta
-	# Button press
-	if parent.movement.y >= -1*60 and flightTime > 0 and !parent.roof and parent.position.y >= parent.limitTop+16:
-		if parent.any_action_held_or_pressed() and (!actionPressed or parent.get_y_input() < 0) and (carryBox.get_player_contacting_count() == 0 or !parent.water):
+	
+	# Hold the action button to ascend; release it to descend.
+	if parent.movement.y >= -60 and flightTime > 0 and !parent.roof and parent.position.y >= parent.limitTop + 16:
+		if parent.any_action_held_or_pressed() and (carryBox.get_player_contacting_count() == 0 or !parent.water):
 			flyGrav = -0.125
-	# return gravity to normal after velocity is less then -1
+		else:
+			flyGrav = 0.03125
 	else:
 		flyGrav = 0.03125
+
+	if parent.position.y < parent.limitTop + 16:
+		parent.movement.y = max(0, parent.movement.y)
 	
-	if parent.position.y < parent.limitTop+16:
-		parent.movement.y = max(0,parent.movement.y)
+	## Flight logic
+	#parent.movement.y += flyGrav/GlobalFunctions.div_by_delta(delta)
+	#
+	#flightTime -= delta
+	## Button press
+	#if parent.movement.y >= -1*60 and flightTime > 0 and !parent.roof and parent.position.y >= parent.limitTop+16:
+		#if parent.any_action_held_or_pressed() and (!actionPressed or parent.get_y_input() < 0) and (carryBox.get_player_contacting_count() == 0 or !parent.water):
+			#flyGrav = -0.125
+	## return gravity to normal after velocity is less then -1
+	#else:
+		#flyGrav = 0.03125
+	#
+	#if parent.position.y < parent.limitTop+16:
+		#parent.movement.y = max(0,parent.movement.y)
 	
-	# set actionPressed to prevent input repeats
-	actionPressed = parent.any_action_held_or_pressed()
+	## set actionPressed to prevent input repeats
+	#actionPressed = parent.any_action_held_or_pressed()
 	
 	# Reset state if on ground
 	if (parent.ground):
