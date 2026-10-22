@@ -48,6 +48,7 @@ signal positionChanged
 
 # how many pixels can you step on top of objects
 @export var pixelObjectStep = 4
+#@export_range(0.0, 12.0, 0.5) var maxEdgeSnapDistance = 4.0
 
 func _ready():
 	slopeCheck.modulate = Color.BLUE_VIOLET
@@ -150,7 +151,7 @@ func update_sensors():
 	# if the player is on a completely flat surface then move the sensor down 8 pixels
 	backSensor.position.y = 8*int(round(rad_to_deg(angle)) == round(rad_to_deg(gravityAngle)) and ground)
 	
-	# slop sensor
+	# slope sensor
 	slopeCheck.position.y = shape.x
 	slopeCheck.target_position = Vector2((shape.y+extendFloorLook)*sign(rotation-angle),0)
 	
@@ -216,6 +217,7 @@ func _physics_process(delta):
 		move_and_slide()
 		# move back down if we shifted up earlier
 		if wasMovedUp:
+			#print( "[SNAPDBG] PIXEL STEP | step=", pixelObjectStep," | position=", global_position)
 			move_and_collide(-up_direction*pixelObjectStep)
 		
 		var _move = velocity
@@ -228,20 +230,77 @@ func _physics_process(delta):
 		
 		# Wall sensors
 		# Check if colliding
+		#if horizontalSensor.is_colliding():
+			#var rayHitVec = (horizontalSensor.get_collision_point() - horizontalSensor.global_position)
+			#var normHitVec = -Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle()))
+			#var wallCorrection = rayHitVec - (normHitVec * pushRadius)
+			#
+			#if wallCorrection.length() > 4.0:
+				#print ("[SNAPDBG] FRONT SENSOR | correction=", wallCorrection, " | length=", wallCorrection.length(), " | collider=", horizontalSensor.get_collider(), " | position=", global_position)
+		#
+			#position += wallCorrection
+		
 		if horizontalSensor.is_colliding():
 			#  Calculate the move distance vectorm, then move
 			var rayHitVec = (horizontalSensor.get_collision_point()-horizontalSensor.global_position)
 			var normHitVec = -Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle()))
 			position += (rayHitVec-(normHitVec*(pushRadius)))
 		
-		if backSensor.is_colliding():
-			#  Calculate the move distance vectorm, then move
-			var rayHitVec = (backSensor.get_collision_point()-backSensor.global_position)
-			var normHitVec = -Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle()))
-			position += (rayHitVec-(normHitVec*(pushRadius)))
+		#if backSensor.is_colliding():
+			#var rayHitVec = (backSensor.get_collision_point() - backSensor.global_position)
+			#var normHitVec = -Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle()))
+			#var backCorrection = rayHitVec - (normHitVec * pushRadius)
+			#
+			#if backCorrection.length() > 4.0:
+				#print ("[SNAPDBG] BACK SENSOR | correction=", backCorrection, " | length=", backCorrection.length(), " | collider=", backSensor.get_collider(), " | position=", global_position)
+			#
+			#position += backCorrection
+		
+		#if backSensor.is_colliding():
+			##  Calculate the move distance vectorm, then move
+			#var rayHitVec = (backSensor.get_collision_point()-backSensor.global_position)
+			#var normHitVec = -Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle()))
+			#position += (rayHitVec-(normHitVec*(pushRadius)))
 		
 		# Floor sensors
 		getVert = get_nearest_vertical_sensor()
+		
+		## Prevent large floor-sensor corrections from snapping the player across wall edges.
+		#if getVert and movement.y >= 0:
+			#var candidateSurfaceAngle = deg_to_rad(snapped(rad_to_deg(getVert.get_collision_normal().rotated(deg_to_rad(90)).angle()), 0.001))
+			#
+			## Only check the correction used by the snapped-angle branch.
+			#if snap_angle(candidateSurfaceAngle) == snap_angle(rotation):
+				#var candidateRayHitVec = (getVert.get_collision_point() - getVert.global_position)
+				#
+				#if candidateRayHitVec.length_squared() > 0.0001:
+					#var candidateNormHitVec = -Vector2.LEFT.rotated(snap_angle(candidateRayHitVec.normalized().angle()))
+					#var candidateFloorCorrection = (candidateRayHitVec - candidateNormHitVec * (($HitBox.shape.size.y / 2.0) + 0.25) - Vector2(0, yGroundDiff).rotated(rotation))
+					#
+					#if candidateFloorCorrection.length() > maxEdgeSnapDistance:
+						#print(
+					#"[SNAPDBG] REJECTED FLOOR CORRECTION | distance=",
+					#candidateFloorCorrection.length(),
+					#" | correction=",
+					#candidateFloorCorrection,
+					#" | surface angle=",
+					#rad_to_deg(candidateSurfaceAngle),
+					#" | rotation=",
+					#rad_to_deg(rotation)
+				#)
+						#getVert = null
+		
+		## Prevent snapping across sharp wall edges.
+		## Reject distant sensor hits if the surface angle changes sharply.
+		#if getVert and movement.y >= 0:
+			#var candidateAngle = deg_to_rad(snapped(rad_to_deg(getVert.get_collision_normal().rotated(deg_to_rad(90)).angle()), 0.001))
+			#var surfaceTurn = abs(wrapf(candidateAngle - angle, -PI, PI))
+			#var hitDistance = getVert.global_position.distance_to(getVert.get_collision_point())
+			#var expectedGroundDistance = ($HitBox.shape.size.y / 2.0) + yGroundDiff
+			#
+			#if surfaceTurn >= deg_to_rad(45.0) and hitDistance > expectedGroundDistance + maxEdgeSnapDistance:
+				#getVert = null
+		
 		# check if colliding (get_nearest_vertical_sensor returns false if no floor was detected)
 		if getVert:
 			# check if movement is going downward, if it is then run some ground routines
@@ -259,6 +318,25 @@ func _physics_process(delta):
 			var rayHitVec = (getVert.get_collision_point()-getVert.global_position)
 			# Snap the Vector and normalize it
 			var normHitVec = -Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle()))
+			
+			#var floorCorrectionEstimate = (rayHitVec - normHitVec * (($HitBox.shape.size.y / 2.0) + 0.25) - Vector2(0, yGroundDiff).rotated(rotation))
+			#
+			#if floorCorrectionEstimate.length() > 4.0:
+				#print(
+		#"[SNAPDBG] FLOOR SENSOR | correction=",
+		#floorCorrectionEstimate,
+		#" | length=",
+		#floorCorrectionEstimate.length(),
+		#" | angle=",
+		#rad_to_deg(angle),
+		#" | rotation=",
+		#rad_to_deg(rotation),
+		#" | collider=",
+		#getVert.get_collider(),
+		#" | position=",
+		#global_position
+	#)
+			
 			if move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector2(0,yGroundDiff).rotated(rotation),true,true,true):
 				var _col = move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector2(0,yGroundDiff).rotated(rotation))
 			else:
