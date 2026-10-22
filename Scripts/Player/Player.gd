@@ -1360,20 +1360,30 @@ func cam_update(forceMove = false):
 	camera.drag_top_margin =    lerp(0.0,float(camDist.y/viewSize.y),float(cameraDragLerp))
 	camera.drag_bottom_margin = camera.drag_top_margin
 	
-	# Extra drag margin for rolling
-	match(character):
-		Global.CHARACTERS.TAILS:
-			match($HitBox.shape.size):
-				currentHitbox.ROLL:
-					camAdjust = Vector2(0,-1)
-				_:
-					camAdjust = Vector2.ZERO
-		_: # default
-			match($HitBox.shape.size):
-				currentHitbox.ROLL:
-					camAdjust = Vector2(0,-5)
-				_:
-					camAdjust = Vector2.ZERO
+	# Extra camera adjustment for rolling.
+	# Compensate for the position shift caused by changing hitbox height.
+	if $HitBox.shape.size == currentHitbox.ROLL:
+		camAdjust = Vector2(
+		0.0,
+		(currentHitbox.ROLL.y - currentHitbox.NORMAL.y) * 0.5
+		)
+	else:
+		camAdjust = Vector2.ZERO
+	
+	## Extra drag margin for rolling
+	#match(character):
+		#Global.CHARACTERS.TAILS:
+			#match($HitBox.shape.size):
+				#currentHitbox.ROLL:
+					#camAdjust = Vector2(0,-1)
+				#_:
+					#camAdjust = Vector2.ZERO
+		#_: # default
+			#match($HitBox.shape.size):
+				#currentHitbox.ROLL:
+					#camAdjust = Vector2(0,-5)
+				#_:
+					#camAdjust = Vector2.ZERO
 
 	# --- PANNING LOGIC ---
 	var actual_velocity_x = (global_position.x - lastPositionX) / get_physics_process_delta_time()
