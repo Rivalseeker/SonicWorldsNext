@@ -1254,7 +1254,13 @@ func touch_ceiling():
 			movement = -Vector2(movement.y*sign(sin(deg_to_rad(getAngle))),0)
 			ground = true
 			return true
-	movement.y = 0
+	
+	# CHANGES 10/23/26
+	# only stop upward movement; if we're already moving away from the ceiling
+	# (e.g. launched down by a spring) leave the speed alone
+	if movement.y < 0:
+		movement.y = 0
+	#movement.y = 0
 
 func land_floor():
 	

@@ -114,6 +114,12 @@ func physics_collision(body, hitVector):
 	elif body.get_collision_layer_value(20):
 		# Bounce from below
 		if hitVector.x != 0:
+			# CHANGES 10/23/26
+			# Side contact only counts when the player is moving toward the monitor.
+			# Standing or landing next to it with no horizontal movement, or moving
+			# away from it, must not destroy it.
+			if sign(body.movement.x) != sign(hitVector.x):
+				return true
 			# check conditions for interaction (and the player is the first player)
 			if body.movement.y >= 0 and body.movement.x != 0 and body.playerControl == 1:
 				playerTouch = body

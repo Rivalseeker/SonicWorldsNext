@@ -1,5 +1,8 @@
 class_name PhysicsObject extends CharacterBody2D
 
+## CHANGE 10/23/26
+#var dbg_watch = 0
+
 # Sensors
 var verticalObjectCheck = RayCast2D.new()
 var verticalSensorLeft = RayCast2D.new()
@@ -48,10 +51,6 @@ signal positionChanged
 
 # how many pixels can you step on top of objects
 @export var pixelObjectStep = 4
-
-## CHANGE 10/22/26
-#@export_range(0.0, 12.0, 0.5)
-#var maxEdgeSnapDistance = 4.0
 
 func _ready():
 	slopeCheck.modulate = Color.BLUE_VIOLET
@@ -197,6 +196,11 @@ func update_sensors():
 
 
 func _physics_process(delta):
+	
+	## CHANGES 10/23/26
+	#if dbg_watch > 0:
+		#dbg_watch -= 1
+		#print("[SPRINGDBG] frame start pos=%s move=%s state=%s ground=%s roof=%s hitH=%s" % [position, movement, get("currentState"), ground, roof, $HitBox.shape.size.y])
 	
 	#movement += Vector2(-int(Input.is_action_pressed("gm_left"))+int(Input.is_action_pressed("gm_right")),-int(Input.is_action_pressed("gm_up"))+int(Input.is_action_pressed("gm_down")))*_delta*100
 	var moveRemaining = movement # copy of the movement variable to cut down on until it hits 0
@@ -366,6 +370,15 @@ func _physics_process(delta):
 			objectCheck.force_raycast_update()
 
 			while objectCheck.is_colliding():
+				
+				## CHANGES 10/23/26
+				#var dbgCol = objectCheck.get_collider()
+				#if dbgCol.has_method("physics_collision"):
+					#var dbgHit = i.rotated(angle).round()
+					#var dbgAnimNode = get("animator")
+					#var dbgAnim = dbgAnimNode.current_animation if dbgAnimNode else "-"
+					#print("[SPRINGDBG] objectCheck dir=%s hitVec=%s testMove=%s | collider=%s layer=%d | bodyMask=%d anim=%s hitH=%s" % [i, dbgHit, test_move(global_transform, dbgHit), dbgCol.name, dbgCol.collision_layer, collision_mask, dbgAnim, $HitBox.shape.size.y])
+				
 				if objectCheck.get_collider().has_method("physics_collision") and test_move(global_transform,i.rotated(angle).round()):
 					objectCheck.get_collider().physics_collision(self,i.rotated(angle).round())
 				# add exclusion, this loop will continue until there isn't any objects

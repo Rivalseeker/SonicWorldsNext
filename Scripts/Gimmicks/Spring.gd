@@ -73,6 +73,10 @@ func physics_collision(body, hitVector):
 	# Standard vector direction check
 	var valid_hit = (hitVector == -hitDirection)
 	
+	## CHANGES 10/23/26
+	#print("[SPRINGDBG] spring=%s hitVector=%s expected=%s valid=%s" % [name, hitVector, -hitDirection, valid_hit])
+	#body.dbg_watch = 12
+	
 	# Allow side/alternate hits for Up, Down, Left, and Right springs when Amy has her hammer out
 	if not valid_hit and (springDirection >= 0 and springDirection <= 3):
 		if is_amy_hammer:
