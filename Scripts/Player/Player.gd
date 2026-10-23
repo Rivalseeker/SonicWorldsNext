@@ -1433,14 +1433,29 @@ func cam_update(forceMove = false):
 	# Camera lock position including horizontal pan, look offset, and vertical pan
 	var getPos = (global_position + Vector2(camPanAmount, camLookOff + camPanVerticalAmount) + camAdjust).round()
 	
+	# CHANGES 10/23/26
 	if camLockTime <= 0 and (forceMove or camera.global_position.distance_to(getPos) <= 16):
-		var dynamic_cam_speed_x = max(16.0 * 60.0, abs(actual_velocity_x))
+		# Follow at the player's own speed plus a constant catch-up speed, so after a
+		# camera lock (Spin Dash / Peel Out) the camera always closes the gap,
+		# however fast the player is moving.
+		var catchUpSpeed = 16.0 * 60.0
+		var dynamic_cam_speed_x = abs(actual_velocity_x) + catchUpSpeed
+		var dynamic_cam_speed_y = abs(actual_velocity_y) + catchUpSpeed
 		camera.global_position.x = move_toward(camera.global_position.x, getPos.x, dynamic_cam_speed_x * get_physics_process_delta_time())
-		camera.global_position.y = move_toward(camera.global_position.y, getPos.y, 16.0 * 60.0 * get_physics_process_delta_time())
+		camera.global_position.y = move_toward(camera.global_position.y, getPos.y, dynamic_cam_speed_y * get_physics_process_delta_time())
 		
 		# clamp to region
 		camera.global_position.x = clamp(camera.global_position.x, limitLeft, limitRight)
 		camera.global_position.y = clamp(camera.global_position.y, limitTop, limitBottom)
+	
+	#if camLockTime <= 0 and (forceMove or camera.global_position.distance_to(getPos) <= 16):
+		#var dynamic_cam_speed_x = max(16.0 * 60.0, abs(actual_velocity_x))
+		#camera.global_position.x = move_toward(camera.global_position.x, getPos.x, dynamic_cam_speed_x * get_physics_process_delta_time())
+		#camera.global_position.y = move_toward(camera.global_position.y, getPos.y, 16.0 * 60.0 * get_physics_process_delta_time())
+		#
+		## clamp to region
+		#camera.global_position.x = clamp(camera.global_position.x, limitLeft, limitRight)
+		#camera.global_position.y = clamp(camera.global_position.y, limitTop, limitBottom)
 	
 	# Ratchet camera scrolling
 	if rachetScrollLeft:
