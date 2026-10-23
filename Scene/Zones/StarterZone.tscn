@@ -28,13 +28,41 @@ tile_set = ExtResource("3_x6mxw")
 [node name="Entities" type="Node2D" parent="."]
 
 [node name="Spring" parent="Entities" instance=ExtResource("5_6l488")]
-position = Vector2(384, 8)
+position = Vector2(336, 232)
+type = 1
+
+[node name="Spring2" parent="Entities" instance=ExtResource("5_6l488")]
+position = Vector2(144, 184)
 scale = Vector2(1, -1)
 type = 1
 springDirection = 1
 
-[node name="Spring2" parent="Entities" instance=ExtResource("5_6l488")]
-position = Vector2(512, 8)
+[node name="Spring3" parent="Entities" instance=ExtResource("5_6l488")]
+position = Vector2(176, 176)
+scale = Vector2(1, -1)
+type = 1
+springDirection = 1
+
+[node name="Spring4" parent="Entities" instance=ExtResource("5_6l488")]
+position = Vector2(208, 168)
+scale = Vector2(1, -1)
+type = 1
+springDirection = 1
+
+[node name="Spring5" parent="Entities" instance=ExtResource("5_6l488")]
+position = Vector2(240, 160)
+scale = Vector2(1, -1)
+type = 1
+springDirection = 1
+
+[node name="Spring6" parent="Entities" instance=ExtResource("5_6l488")]
+position = Vector2(272, 152)
+scale = Vector2(1, -1)
+type = 1
+springDirection = 1
+
+[node name="Spring7" parent="Entities" instance=ExtResource("5_6l488")]
+position = Vector2(304, 144)
 scale = Vector2(1, -1)
 type = 1
 springDirection = 1
