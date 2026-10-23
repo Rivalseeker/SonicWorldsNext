@@ -17,11 +17,18 @@ func _physics_process(delta):
 	if (!parent.ground):
 		parent.set_state(parent.STATES.AIR,parent.currentHitbox.ROLL)
 		return
-		
+	
+	# CHANGES 10/23/26
 	# Set normal only if not inside a ForceRoll area, and either up input is pressed or speed is 0
 	if parent.forceRoll <= 0 and ((parent.inputs[parent.INPUTS.YINPUT] < 0 and !parent.check_for_ceiling()) or parent.movement.x == 0):
+		# un-rolling above the on-foot top speed: slow down to it instead of keeping the speed
+		parent.overspeedBleed = abs(parent.movement.x) > parent.topfoot
 		parent.set_state(parent.STATES.NORMAL)
 		return
+	## Set normal only if not inside a ForceRoll area, and either up input is pressed or speed is 0
+	#if parent.forceRoll <= 0 and ((parent.inputs[parent.INPUTS.YINPUT] < 0 and !parent.check_for_ceiling()) or parent.movement.x == 0):
+		#parent.set_state(parent.STATES.NORMAL)
+		#return
 		
 	## Set normal if speed is 0
 	#if (parent.movement.x == 0):
@@ -61,8 +68,9 @@ func _physics_process(delta):
 		if (sign(parent.movement.x) != checkX):
 			parent.movement.x -= parent.movement.x
 	
-	# clamp rolling top speed
-	parent.movement.x = clamp(parent.movement.x,-parent.toproll,parent.toproll)
+	# CHANGES 10/23/26
+	# (rolling is no longer capped, so downhill rolling can keep accelerating)
+	#parent.movement.x = clamp(parent.movement.x,-parent.toproll,parent.toproll)
 
 # stop the water run sound
 func state_exit():

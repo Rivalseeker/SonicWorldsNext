@@ -14,6 +14,12 @@ var frc = 0.046875			#friction (same as acc)
 var rollfrc = frc*0.5		#roll friction
 var rolldec = 0.125			#roll deceleration
 var top = 6*60				#top horizontal speed
+
+# CHANGES 10/23/26
+var topfoot = 16*60			#max ground speed on foot that a downhill slope can accelerate the player to
+var overspeedBleed = false		#true while slowing from above topfoot after un-rolling with up
+var bleeddec = 0.5				#how fast speed above topfoot is bled off (per frame at 60fps)
+
 var toproll = 16*60			#top horizontal speed rolling
 var slp = 0.125				#slope factor when walking/running
 var slprollup = 0.078125		#slope factor when rolling uphill
