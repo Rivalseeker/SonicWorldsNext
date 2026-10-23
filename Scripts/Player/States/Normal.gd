@@ -284,18 +284,18 @@ func _physics_process(delta):
 	
 	# Apply slope factor, Sonic 1/2/CD/Mania style
 	# If you want symmetry over Accuracy, the "46" in the line below should actually be "45"
-	## CHANGES 10/23/26
-	#if (calcAngle >= 46 and calcAngle <= 315) or parent.movement.x !=0:
-		#var slopeDelta = (parent.slp*sin(parent.angle-parent.gravityAngle))/GlobalFunctions.div_by_delta(delta)
-		#var newX = parent.movement.x + slopeDelta
-		## on foot, a slope can't accelerate the player past topfoot
-		## (only applies when the slope is increasing speed, i.e. downhill)
-		#if abs(newX) > parent.topfoot and abs(newX) > abs(parent.movement.x):
-			#newX = sign(newX) * max(abs(parent.movement.x), parent.topfoot)
-		#parent.movement.x = newX
-	
+	# CHANGES 10/23/26
 	if (calcAngle >= 46 and calcAngle <= 315) or parent.movement.x !=0:
-		parent.movement.x += (parent.slp*sin(parent.angle-parent.gravityAngle))/GlobalFunctions.div_by_delta(delta)
+		var slopeDelta = (parent.slp*sin(parent.angle-parent.gravityAngle))/GlobalFunctions.div_by_delta(delta)
+		var newX = parent.movement.x + slopeDelta
+		# on foot, a slope can't accelerate the player past topfoot
+		# (only applies when the slope is increasing speed, i.e. downhill)
+		if abs(newX) > parent.topfoot and abs(newX) > abs(parent.movement.x):
+			newX = sign(newX) * max(abs(parent.movement.x), parent.topfoot)
+		parent.movement.x = newX
+	
+	#if (calcAngle >= 46 and calcAngle <= 315) or parent.movement.x !=0:
+		#parent.movement.x += (parent.slp*sin(parent.angle-parent.gravityAngle))/GlobalFunctions.div_by_delta(delta)
 	
 	
 	# Apply slope factor, Sonic 3 style
@@ -308,13 +308,13 @@ func _physics_process(delta):
 			parent.disconect_from_floor()
 		parent.horizontalLockTimer = 30.0/60.0
 	
-	## CHANGES 10/23/26
-	## slow down to the on-foot top speed after un-rolling above it
-		#if parent.overspeedBleed:
-			#if abs(parent.movement.x) > parent.topfoot:
-				#parent.movement.x = move_toward(parent.movement.x, sign(parent.movement.x) * parent.topfoot, parent.bleeddec / GlobalFunctions.div_by_delta(delta))
-			#else:
-				#parent.overspeedBleed = false
+	# CHANGES 10/23/26
+	# slow down to the on-foot top speed after un-rolling above it
+		if parent.overspeedBleed:
+			if abs(parent.movement.x) > parent.topfoot:
+				parent.movement.x = move_toward(parent.movement.x, sign(parent.movement.x) * parent.topfoot, parent.bleeddec / GlobalFunctions.div_by_delta(delta))
+			else:
+				parent.overspeedBleed = false
 	# movement
 	parent.action_move(delta)
 
