@@ -32,7 +32,7 @@ func _process(_delta):
 			parent.animator.play("dropDash") # Spinning hammer attack animation
 			parent.shieldSprite.get_node("InstaShieldHitbox/HitBox").disabled = false
 		# Shield actions
-		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and (isJump or (parent.animator.current_animation == "roll" and (parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.TAILS or parent.character == Global.CHARACTERS.KNUCKLES)))):
+		elif ((parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !parent.abilityUsed and (isJump or (parent.animator.current_animation == "roll" and (parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.TAILS or parent.character == Global.CHARACTERS.KNUCKLES or parent.character == Global.CHARACTERS.AMY)) or (parent.character == Global.CHARACTERS.AMY and parent.animator.current_animation == "dropDash"))):
 			# Super actions
 			if parent.isSuper and (parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.AMY):
 				parent.abilityUsed = true # has to be set to true for drop dash (Sonic and amy only)
@@ -286,8 +286,13 @@ func _on_ShieldTimer_timeout():
 # reset drop dash timer and gripping when this state is set
 func state_activated():
 	dropTimer = 0
-	doubleJumpUsed = !isJump # False if jumped from ground (allows double jump), True if rolled/fell off an edge (disallows double jump)
+	# False if jumped from ground, or if Amy (she can double jump while rolling in the air without jumping;
+	# the "roll" animation check in _process keeps this from applying when she just falls off an edge)
+	doubleJumpUsed = !isJump and parent.character != Global.CHARACTERS.AMY
+	
+	#doubleJumpUsed = !isJump # False if jumped from ground (allows double jump), True if rolled/fell off an edge (disallows double jump)
 	#doubleJumpUsed = false
+	
 	parent.poleGrabID = null
 	
 	# Reset Amy's hammer / drop dash attack state when entering/re-entering air (such as hitting a spring)

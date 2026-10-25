@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=4 uid="uid://ktt2ldlypllv"]
+[gd_scene load_steps=6 format=4 uid="uid://ktt2ldlypllv"]
 
 [ext_resource type="Script" path="res://Scripts/Level/Level.gd" id="1_aqxt4"]
 [ext_resource type="PackedScene" uid="uid://c30uceea18q1w" path="res://Entities/Misc/HUD.tscn" id="2_kwu2e"]
 [ext_resource type="TileSet" uid="uid://b52aenq8bhfsf" path="res://Tileset/Worlds/WorldsTileMap.tres" id="3_x6mxw"]
 [ext_resource type="PackedScene" uid="uid://cioq5saowvqxj" path="res://Entities/MainObjects/Player.tscn" id="4_gpvws"]
+[ext_resource type="PackedScene" uid="uid://gklj3ebdwveu" path="res://Entities/Items/Monitor.tscn" id="5_1twkm"]
 
 [node name="StarterZone" type="Node2D"]
 script = ExtResource("1_aqxt4")
@@ -25,6 +26,10 @@ tile_map_data = PackedByteArray("AAAAAA8AAAACAAAAAAABAA8AAAACAAAAAAACAA8AAAACAAA
 tile_set = ExtResource("3_x6mxw")
 
 [node name="Monitors" type="Node2D" parent="."]
+
+[node name="Monitor" parent="Monitors" instance=ExtResource("5_1twkm")]
+position = Vector2(200, 224)
+item = 7
 
 [node name="MeasureTools" type="Node2D" parent="."]
 
