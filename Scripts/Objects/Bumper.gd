@@ -10,6 +10,9 @@ func physics_collision(body, _hitVector):
 	var isAmy = (body.character == Global.CHARACTERS.AMY)
 	var hammerSpinning = (isAmy and body.animator.current_animation == "dropDash")
 	var hammerPos = body.animator.current_animation_position
+	# NEW: was she charging a drop dash when bumped? (jump and air states both track dropTimer)
+	var inAirStates = (body.currentState == body.STATES.JUMP or body.currentState == body.STATES.AIR)
+	var wasCharging = (isAmy and inAirStates and body.stateList[body.currentState].dropTimer > 0)
 	
 	if body.currentState == body.STATES.JUMP: # set the state to air
 		# remember whether Amy has already used her double jump (entering the air state would reset it)
@@ -28,6 +31,15 @@ func physics_collision(body, _hitVector):
 				body.animator.play("dropDash")
 				body.animator.seek(hammerPos, true)
 				body.shieldSprite.get_node("InstaShieldHitbox/HitBox").set_deferred("disabled", false)
+	
+	# NEW: any bumper hit cancels Amy's drop dash and blocks it until she double jumps again
+	if isAmy and body.currentState == body.STATES.AIR:
+		var airState = body.stateList[body.STATES.AIR]
+		airState.bumpedInAir = true
+		airState.dropDashEnabled = false
+		airState.dropTimer = 0
+		if wasCharging:
+			body.sfx[20].stop()
 	
 	$Bumper.play("default")
 	

@@ -13,6 +13,10 @@ var lockDir = false
 
 # Double jump tracking for Amy
 var doubleJumpUsed = false
+# Amy drop dash after a bumper: set when she double jumps in the air state after hitting a bumper,
+# cleared by any further bumper hit
+var bumpedInAir = false
+var dropDashEnabled = false
 
 func _ready():
 	if isJump: # we only want to connect it once so only apply this to the jump variation
@@ -161,6 +165,8 @@ func _process(_delta):
 					Global.CHARACTERS.AMY:
 						if not doubleJumpUsed:
 							doubleJumpUsed = true
+							#dropDashEnabled = true
+							dropDashEnabled = bumpedInAir # can drop dash only if she bumped before this double jump
 							parent.movement.y = -parent.jmp * 0.5
 							parent.sfx[0].play() # Jump sound
 							parent.sfx[30].play() # Hammer sound
@@ -182,10 +188,13 @@ func _physics_process(delta):
 		parent.movement.x -= ((parent.movement.x / 0.125) / 256)*60*delta
 	
 	# Mechanics if jumping
-	if (isJump):
+	if (isJump or dropDashEnabled):
 		# Cut vertical movement if jump released
-		if !parent.any_action_held_or_pressed() and parent.movement.y < -parent.releaseJmp*60:
+		if isJump and !parent.any_action_held_or_pressed() and parent.movement.y < -parent.releaseJmp*60:
 			parent.movement.y = -parent.releaseJmp*60
+		
+		#if !parent.any_action_held_or_pressed() and parent.movement.y < -parent.releaseJmp*60:
+			#parent.movement.y = -parent.releaseJmp*60
 		# Drop dash (for sonic / amy)
 		if parent.character == Global.CHARACTERS.SONIC or parent.character == Global.CHARACTERS.AMY:
 			
@@ -286,6 +295,8 @@ func _on_ShieldTimer_timeout():
 # reset drop dash timer and gripping when this state is set
 func state_activated():
 	dropTimer = 0
+	bumpedInAir = false
+	dropDashEnabled = false
 	# False if jumped from ground, or if Amy (she can double jump while rolling in the air without jumping;
 	# the "roll" animation check in _process keeps this from applying when she just falls off an edge)
 	doubleJumpUsed = !isJump and parent.character != Global.CHARACTERS.AMY
