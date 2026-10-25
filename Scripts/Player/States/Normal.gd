@@ -187,10 +187,10 @@ func _process(delta):
 								parent.direction = -parent.direction
 							#far edge
 							if !getMEdge:
-								parent.animator.play("edge2")
+								parent.animator.play("edge3")
 							#normal edge
 							else:
-								parent.animator.play("edge3")
+								parent.animator.play("edge2")
 						
 						_: #default
 							# super edge
