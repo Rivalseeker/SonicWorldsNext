@@ -165,8 +165,8 @@ func _process(_delta):
 					Global.CHARACTERS.AMY:
 						if not doubleJumpUsed:
 							doubleJumpUsed = true
-							#dropDashEnabled = true
-							dropDashEnabled = bumpedInAir # can drop dash only if she bumped before this double jump
+							dropDashEnabled = false
+							#dropDashEnabled = bumpedInAir # can drop dash only if she bumped before this double jump
 							parent.movement.y = -parent.jmp * 0.5
 							parent.sfx[0].play() # Jump sound
 							parent.sfx[30].play() # Hammer sound

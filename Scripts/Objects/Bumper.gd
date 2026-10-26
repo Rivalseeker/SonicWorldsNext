@@ -8,11 +8,14 @@ func physics_collision(body, _hitVector):
 	body.movement = (body.global_position-global_position).normalized()*7*60.0
 	
 	var isAmy = (body.character == Global.CHARACTERS.AMY)
+	var dropDashAnim = (body.animator.current_animation == "dropDash")
 	var hammerSpinning = (isAmy and body.animator.current_animation == "dropDash")
 	var hammerPos = body.animator.current_animation_position
-	# NEW: was she charging a drop dash when bumped? (jump and air states both track dropTimer)
+	# did she start this airtime with a jump (as opposed to rolling off an edge)?
+	var wasJumping = (body.currentState == body.STATES.JUMP)
+	# was a drop dash charging? (jump and air states both track dropTimer)
 	var inAirStates = (body.currentState == body.STATES.JUMP or body.currentState == body.STATES.AIR)
-	var wasCharging = (isAmy and inAirStates and body.stateList[body.currentState].dropTimer > 0)
+	var wasCharging = (inAirStates and body.stateList[body.currentState].dropTimer > 0)
 	
 	if body.currentState == body.STATES.JUMP: # set the state to air
 		# remember whether Amy has already used her double jump (entering the air state would reset it)
@@ -20,6 +23,10 @@ func physics_collision(body, _hitVector):
 		var abilityWasUsed = body.abilityUsed
 		
 		body.set_state(body.STATES.AIR)
+		
+		# NEW: the insta shield (no elemental shield) is once per airtime, bumpers don't refresh it
+		if body.shield == body.SHIELDS.NONE:
+			body.abilityUsed = abilityWasUsed
 		
 		if isAmy:
 			# Amy only gets one double jump per time in the air, bumpers don't refresh it
@@ -31,11 +38,20 @@ func physics_collision(body, _hitVector):
 				body.animator.play("dropDash")
 				body.animator.seek(hammerPos, true)
 				body.shieldSprite.get_node("InstaShieldHitbox/HitBox").set_deferred("disabled", false)
+		else:
+			# a bump cancels a drop dash that is charging or ready:
+			# entering the air state resets "dropDash" to the idle pose, so go back to rolling
+			if dropDashAnim:
+				body.animator.play("roll")
+			if wasCharging:
+				body.sfx[20].stop()
 	
-	# NEW: any bumper hit cancels Amy's drop dash and blocks it until she double jumps again
+	# any bumper hit cancels Amy's drop dash and blocks it until she double jumps again
 	if isAmy and body.currentState == body.STATES.AIR:
 		var airState = body.stateList[body.STATES.AIR]
-		airState.bumpedInAir = true
+		# only a bumper hit after a real jump makes a later double jump able to drop dash
+		if wasJumping:
+			airState.bumpedInAir = true
 		airState.dropDashEnabled = false
 		airState.dropTimer = 0
 		if wasCharging:
