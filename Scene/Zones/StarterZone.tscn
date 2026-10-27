@@ -28,8 +28,8 @@ tile_set = ExtResource("3_x6mxw")
 [node name="Monitors" type="Node2D" parent="."]
 
 [node name="Monitor" parent="Monitors" instance=ExtResource("5_1twkm")]
-position = Vector2(200, 224)
-item = 7
+position = Vector2(2744, 176)
+item = 1
 
 [node name="MeasureTools" type="Node2D" parent="."]
 
