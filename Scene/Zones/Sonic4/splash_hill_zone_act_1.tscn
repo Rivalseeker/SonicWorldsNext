@@ -1,21 +1,30 @@
-[gd_scene load_steps=8 format=3 uid="uid://daju8at8krghq"]
+[gd_scene load_steps=13 format=3 uid="uid://daju8at8krghq"]
 
-[ext_resource type="Script" path="res://Scripts/Level/Level.gd" id="1_tnqi5"]
+[ext_resource type="Script" path="res://Tools/AddOns/Level.gd" id="1_6y2v4"]
 [ext_resource type="PackedScene" uid="uid://c30uceea18q1w" path="res://Entities/Misc/HUD.tscn" id="1_v621n"]
 [ext_resource type="PackedScene" uid="uid://cioq5saowvqxj" path="res://Entities/MainObjects/Player.tscn" id="2_uu1jo"]
 [ext_resource type="Texture2D" uid="uid://byb13xvetq1rr" path="res://Graphics/Backgrounds/Sprite-0003.png" id="5_8s4hi"]
+[ext_resource type="PackedScene" uid="uid://bgodeg4oddje6" path="res://Entities/MainObjects/BoundrySetter.tscn" id="5_pdgtm"]
+[ext_resource type="PackedScene" uid="uid://4q0hpddgto2k" path="res://Entities/Gimmicks/Spring.tscn" id="5_rueyr"]
 [ext_resource type="PackedScene" uid="uid://bg66ofhfkxsx6" path="res://Entities/Gimmicks/Bridge.tscn" id="5_x6kcm"]
 [ext_resource type="Texture2D" uid="uid://60q6n5y8617c" path="res://Graphics/Backgrounds/Sprite-0002.png" id="6_l5n1a"]
+[ext_resource type="Texture2D" uid="uid://caurfdylx0yh" path="res://Graphics/Backgrounds/Sprite-0005.png" id="9_bgix2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rkajb"]
 size = Vector2(364, 17)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pxfwq"]
+size = Vector2(1847, 1436)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1se74"]
+size = Vector2(288, 1485)
+
 [node name="SplashHillZone_Act1" type="Node2D"]
-script = ExtResource("1_tnqi5")
+script = ExtResource("1_6y2v4")
 defaultLeftBoundry = 0
 defaultTopBoundry = -1168
-defaultRightBoundry = 4122
-defaultBottomBoundry = 270
+defaultRightBoundry = 5328
+defaultBottomBoundry = 804
 
 [node name="HUD" parent="." instance=ExtResource("1_v621n")]
 zoneName = "Splash Hill"
@@ -44,11 +53,43 @@ shape = SubResource("RectangleShape2D_rkajb")
 one_way_collision = true
 debug_color = Color(0, 1, 1, 0.501961)
 
+[node name="SemisolidPlateau2" type="CollisionPolygon2D" parent="LevelLayout/SemisolidGround"]
+polygon = PackedVector2Array(2197, 84, 2568, 84, 2576, 83, 2584, 82, 2592, 81, 2600, 80, 2608, 78, 2616, 75, 2624, 71, 2632, 67, 2640, 63, 2648, 58, 2656, 53, 2664, 48, 2672, 43, 2680, 38, 2688, 34, 2696, 30, 2704, 26, 2712, 22, 2720, 20, 2728, 18, 2736, 16, 2744, 15, 2752, 14, 2760, 13, 2846, 13, 2846, 96, 2197, 96)
+one_way_collision = true
+
 [node name="Entities" type="Node2D" parent="."]
 
 [node name="Bridge" parent="Entities" instance=ExtResource("5_x6kcm")]
 position = Vector2(1928, 162)
 length = 13
+
+[node name="Springs" type="Node2D" parent="Entities"]
+
+[node name="Spring" parent="Entities/Springs" instance=ExtResource("5_rueyr")]
+position = Vector2(2855, 17)
+springDirection = 4
+
+[node name="BoundarySetters" type="Node2D" parent="."]
+
+[node name="BoundrySetter" parent="BoundarySetters" instance=ExtResource("5_pdgtm")]
+position = Vector2(1680, 112)
+topBoundry = -1168
+rightBoundry = 4122
+bottomBoundry = 272
+
+[node name="CollisionShape2D" parent="BoundarySetters/BoundrySetter" index="0"]
+position = Vector2(-763.5, -606)
+shape = SubResource("RectangleShape2D_pxfwq")
+
+[node name="BoundrySetter2" parent="BoundarySetters" instance=ExtResource("5_pdgtm")]
+position = Vector2(2016, 40)
+topBoundry = -1168
+rightBoundry = 4122
+bottomBoundry = 804
+
+[node name="CollisionShape2D" parent="BoundarySetters/BoundrySetter2" index="0"]
+position = Vector2(16, -512.5)
+shape = SubResource("RectangleShape2D_1se74")
 
 [node name="Sprite-0003" type="Sprite2D" parent="."]
 z_index = -100
@@ -59,3 +100,10 @@ texture = ExtResource("5_8s4hi")
 z_index = -100
 position = Vector2(3728, -180)
 texture = ExtResource("6_l5n1a")
+
+[node name="Sprite-0005" type="Sprite2D" parent="."]
+position = Vector2(7055, -182)
+texture = ExtResource("9_bgix2")
+
+[editable path="BoundarySetters/BoundrySetter"]
+[editable path="BoundarySetters/BoundrySetter2"]

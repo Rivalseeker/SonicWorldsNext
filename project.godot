@@ -38,6 +38,10 @@ window/stretch/mode="viewport"
 
 project/assembly_name="Sonic Worlds Next"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/level_boundary_editor/plugin.cfg")
+
 [gui]
 
 theme/custom_font="res://Graphics/Fonts/small_font.png"
